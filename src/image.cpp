@@ -26,18 +26,18 @@ auto Image::writeToPpm(std::string_view path) const -> void {
 	}
 }
 
-auto Image::operator()(size_t x, size_t y) -> Color& {
+auto Image::operator()(size_t x, size_t y) -> Vec3& {
 	return get(x, y);
 }
 
-auto Image::operator()(size_t x, size_t y) const -> const Color& {
+auto Image::operator()(size_t x, size_t y) const -> const Vec3& {
 	return get(x, y);
 }
 
-auto Image::get(size_t x, size_t y) -> Color& {
+auto Image::get(size_t x, size_t y) -> Vec3& {
 	return data[y * width + x];
 }
 
-auto Image::get(size_t x, size_t y) const -> const Color& {
+auto Image::get(size_t x, size_t y) const -> const Vec3& {
 	return data[y * width + x];
 }
