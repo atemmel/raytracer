@@ -1,3 +1,4 @@
+#include "camera.hpp"
 #include "image.hpp"
 #include "math.hpp"
 #include "ray.hpp"
@@ -47,39 +48,41 @@ auto rayColor(const Ray& ray, const World& world) -> Vec3 {
 		+ step * Vec3{0.5f, 0.7f, 1.f};
 }
 
+auto normalizeColor(Vec3 color, size_t samples) -> Vec3 {
+	float scale = 1.f / samples;
+	color = color * scale;
+	color.r = clamp(color.r, 0.f, 0.999f);
+	color.g = clamp(color.g, 0.f, 0.999f);
+	color.b = clamp(color.b, 0.f, 0.999f);
+	return color;
+}
+
 auto main() -> int {
-	const auto aspectRatio = 16.f / 9.f;
+	Camera camera;
 	const size_t imageWidth = 400;
 	const size_t imageHeight = 
-		static_cast<int>(imageWidth / aspectRatio);
+		static_cast<int>(imageWidth / camera.aspectRatio);
+
+	const size_t samplesPerPixel = 10;
 
 	World world;
 	world.add(Sphere{{0.f, 0.f, -1.f}, 0.5f});
 	world.add(Sphere{{0.f, -100.5f, -1.f}, 100.f});
-
-	auto viewportHeight = 2.f;
-	auto viewportWidth = aspectRatio * viewportHeight;
-	auto focalLength = 1.f;
-
-	auto origin = Vec3{};
-	auto horizontal = Vec3{viewportWidth, 0, 0};
-	auto vertical = Vec3{0, viewportHeight, 0};
-	auto lowerLeftCorner = origin - horizontal / 2 - vertical / 2 
-		- Vec3{0, 0, focalLength};
 
 	auto image = Image::create(imageWidth, imageHeight);
 
 	for(size_t x = 0; x < image.width; x++) {
 		for(size_t y = 0; y < image.height; y++) {
 			size_t yn = image.height - 1 - y;
-			auto u = float(x) / (image.width - 1);
-			auto v = float(yn) / (image.height - 1);
-			auto ray = Ray{origin, lowerLeftCorner
-					+ u * horizontal
-					+ v * vertical};
+			Vec3 color{};
+			for(size_t sample = 0; sample < samplesPerPixel; sample++) {
+				auto u = float(x + randomFloat()) / (image.width - 1);
+				auto v = float(yn + randomFloat()) / (image.height - 1);
+				auto ray = camera.ray(u, v);
+				color = color + rayColor(ray, world);
 
-			auto color = rayColor(ray, world);
-			image(x, y) = color;
+			}
+			image(x, y) = normalizeColor(color, samplesPerPixel);
 		}
 	}
 

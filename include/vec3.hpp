@@ -3,7 +3,7 @@
 struct Vec3 {
 	union {
 		struct {
-			float r, g, b;
+			float r = 0, g = 0, b = 0;
 		};
 		struct {
 			float x, y, z;

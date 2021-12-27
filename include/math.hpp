@@ -8,3 +8,6 @@ constexpr float Pi = 3.1415927f;
 
 constexpr auto degreesToRadians(float theta) -> float;
 constexpr auto radiansToDegrees(float theta) -> float;
+
+auto randomFloat() -> float;
+auto clamp(float a, float min, float max) -> float;
