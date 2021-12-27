@@ -10,9 +10,6 @@ struct Vec3 {
 		};
 	};
 
-	Vec3();
-	Vec3(float f0, float f1, float f2);
-
 	auto operator-() const -> Vec3;
 	auto operator[](int index) const -> float;
 	auto operator[](int index) -> float&;
@@ -25,6 +22,7 @@ struct Vec3 {
 	auto cross(const Vec3 rhs) const -> Vec3;
 
 	auto norm() const -> float;
+	auto squaredNorm() const -> float;
 	auto unit() const -> Vec3;
 };
 
