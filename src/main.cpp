@@ -34,7 +34,7 @@ auto main() -> int {
 	const size_t imageHeight = 
 		static_cast<int>(imageWidth / camera.aspectRatio);
 
-	const size_t samplesPerPixel = 10;
+	const size_t samplesPerPixel = 100;
 
 	World world;
 	world.add(Sphere{{0.f, 0.f, -1.f}, 0.5f});
@@ -55,6 +55,7 @@ auto main() -> int {
 			}
 			image(x, y) = normalizeColor(color, samplesPerPixel);
 		}
+		image.writeToPpm("image.ppm");
 	}
 
 	image.writeToPpm("image.ppm");
