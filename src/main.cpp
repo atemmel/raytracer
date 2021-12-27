@@ -2,20 +2,27 @@
 #include "ray.hpp"
 #include "sphere.hpp"
 
+#include <cmath>
 #include <iostream>
 
-auto rayHitsSphere(const Ray& ray, Sphere sphere) -> bool {
+auto rayHitsSphere(const Ray& ray, Sphere sphere) -> float {
 	auto oc = ray.origin - sphere.origin;
 	auto a = ray.direction.dot(ray.direction);
 	auto b = 2.f * oc.dot(ray.direction);
 	auto c = oc.dot(oc) - sphere.radius * sphere.radius;
 	auto discriminant = b * b - 4 * a * c;
-	return discriminant > 0;
+	if(discriminant < 0.f) {
+		return -0.f;
+	}
+	// extract step value for ray
+	return (-b - std::sqrt(discriminant)) / (2.f * a);
 }
 
 auto rayColor(const Ray& ray) -> Vec3 {
-	if(rayHitsSphere(ray, Sphere{{0.f, 0.f, -1.f}, 0.5f})) {
-		return Vec3(1.f, 0.f, 0.f);
+	auto step = rayHitsSphere(ray, {{0.f, 0.f, -1.f}, 0.5f});
+	if(step > 0.f) {
+		auto normal = (ray.at(step) - Vec3{0.f, 0.f, -1.f}).unit();
+		return 0.5f * Vec3(normal.x + 1.f, normal.y + 1.f, normal.z + 1.f);
 	}
 	auto unit = ray.direction.unit();
 	auto t = 0.5f * (unit.y + 1.f);
@@ -45,7 +52,7 @@ auto main() -> int {
 		for(size_t y = 0; y < image.height; y++) {
 			size_t yn = image.height - 1 - y;
 			auto u = float(x) / (image.width - 1);
-			auto v = float(y) / (image.height - 1);
+			auto v = float(yn) / (image.height - 1);
 			auto ray = Ray(origin, lowerLeftCorner
 					+ u * horizontal
 					+ v * vertical);
