@@ -1,9 +1,22 @@
 #include "image.hpp"
 #include "ray.hpp"
+#include "sphere.hpp"
 
 #include <iostream>
 
+auto rayHitsSphere(const Ray& ray, Sphere sphere) -> bool {
+	auto oc = ray.origin - sphere.origin;
+	auto a = ray.direction.dot(ray.direction);
+	auto b = 2.f * oc.dot(ray.direction);
+	auto c = oc.dot(oc) - sphere.radius * sphere.radius;
+	auto discriminant = b * b - 4 * a * c;
+	return discriminant > 0;
+}
+
 auto rayColor(const Ray& ray) -> Vec3 {
+	if(rayHitsSphere(ray, Sphere{{0.f, 0.f, -1.f}, 0.5f})) {
+		return Vec3(1.f, 0.f, 0.f);
+	}
 	auto unit = ray.direction.unit();
 	auto t = 0.5f * (unit.y + 1.f);
 	return (1.f - t) * Vec3(1.f, 1.f, 1.f) 
