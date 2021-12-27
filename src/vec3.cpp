@@ -55,3 +55,11 @@ auto Vec3::norm() const -> float {
 auto Vec3::unit() const -> Vec3 {
 	return *this / norm();
 }
+
+auto operator*(float lhs, Vec3 rhs) -> Vec3 {
+	return rhs * lhs;
+}
+
+auto operator/(float lhs, Vec3 rhs) -> Vec3 {
+	return rhs * lhs;
+}
