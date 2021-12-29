@@ -11,7 +11,7 @@ constexpr auto radiansToDegrees(float theta) -> float {
 }
 
 auto randomFloat(float min, float max) -> float {
-	static thread_local std::uniform_real_distribution<float> distribution(min, max);
+	std::uniform_real_distribution<float> distribution(min, max);
 	static thread_local std::mt19937 generator(std::random_device{}());
 	return distribution(generator);
 }
