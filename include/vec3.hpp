@@ -10,6 +10,9 @@ struct Vec3 {
 		};
 	};
 
+	static auto random(float min = 0.f, float max = 1.f) -> Vec3;
+	static auto randomUnit() -> Vec3;
+
 	auto operator-() const -> Vec3;
 	auto operator[](int index) const -> float;
 	auto operator[](int index) -> float&;

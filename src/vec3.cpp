@@ -1,6 +1,23 @@
 #include "vec3.hpp"
 
-#include <cmath>
+#include "math.hpp"
+
+auto Vec3::random(float min, float max) -> Vec3 {
+	return Vec3{
+		randomFloat(min, max),
+		randomFloat(min, max),
+		randomFloat(min, max),
+	};
+}
+
+auto Vec3::randomUnit() -> Vec3 {
+	for(;;) {
+		auto v = random(-1.f, 1.f);
+		if(v.squaredNorm() < 1.f) {
+			return v;
+		}
+	}
+}
 
 auto Vec3::operator-() const -> Vec3 {
 	return {-x, -y, -z};
