@@ -58,6 +58,14 @@ auto Vec3::cross(const Vec3 rhs) const -> Vec3 {
 		x * rhs.y - y * rhs.x};
 }
 
+auto Vec3::operator*(Vec3 rhs) const -> Vec3 {
+	return {
+		x * rhs.x,
+		y * rhs.y,
+		z * rhs.z,
+	};
+}
+
 auto Vec3::squaredNorm() const -> float {
 	return x*x + y*y + z*z;
 }
@@ -68,6 +76,13 @@ auto Vec3::norm() const -> float {
 
 auto Vec3::unit() const -> Vec3 {
 	return *this / norm();
+}
+
+auto Vec3::nearZero() const -> bool {
+	constexpr static float epsilon = 1e-6;
+	return std::abs(x) < epsilon 
+		&& std::abs(y) < epsilon 
+		&& std::abs(z) < epsilon;
 }
 
 auto operator*(float lhs, Vec3 rhs) -> Vec3 {

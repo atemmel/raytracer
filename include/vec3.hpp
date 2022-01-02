@@ -24,9 +24,13 @@ struct Vec3 {
 	auto dot(const Vec3 rhs) const -> float;
 	auto cross(const Vec3 rhs) const -> Vec3;
 
+	auto operator*(Vec3 rhs) const -> Vec3;
+
 	auto norm() const -> float;
 	auto squaredNorm() const -> float;
 	auto unit() const -> Vec3;
+
+	auto nearZero() const -> bool;
 };
 
 auto operator*(float lhs, Vec3 rhs) -> Vec3;

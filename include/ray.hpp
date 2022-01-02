@@ -9,6 +9,7 @@ struct RayHitData {
 	Vec3 point;
 	Vec3 normal;
 	float step;
+	size_t materialIndex;
 };
 
 struct Ray {
