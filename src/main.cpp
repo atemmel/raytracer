@@ -19,7 +19,7 @@ auto rayColor(const Ray& ray, const World& world, size_t depth) -> Vec3 {
 	if(ray.hit(world, 0.0001f, Infinity, data)) {
 		Ray scattered{};
 		Vec3 color{};
-		if(Materials::apply(data.materialIndex, data, color, scattered)) {
+		if(Materials::apply(data.material, data, color, scattered)) {
 			return color * rayColor(scattered, world, depth - 1);
 		}
 		return {};
@@ -67,9 +67,15 @@ auto main(int argc, char** argv) -> int {
 		},
 	});
 
+	auto redMaterial = Materials::create({
+		.lambertian = {
+			.albedo = {1.0f, 0.0f, 0.0f},
+		},
+	});
+
 	World world;
 	world.add(Sphere{{0.f, 0.f, -1.f}, 0.5f, blueMaterial});
-	world.add(Sphere{{2.f, 0.f, -2.f}, 0.2f, blueMaterial});
+	world.add(Sphere{{2.f, 0.f, -2.f}, 0.2f, redMaterial});
 	world.add(Sphere{{0.2f, 0.f, -0.6f}, 0.2f, blueMaterial});
 	world.add(Sphere{{0.f, -100.5f, -1.f}, 100.f, blueMaterial});
 

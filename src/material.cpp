@@ -11,13 +11,13 @@ auto Materials::apply(size_t index, RayHitData& data, Vec3& result, Ray& scatter
 	const Material& material = materials[index];
 	switch(material.model) {
 		case Material::Lambertian:
-			return applyLambertian(material.lambertian, data, result, scattered);
+			return apply(material.lambertian, data, result, scattered);
 	}
 
 	return false;
 }
 
-auto Materials::applyLambertian(const Material::LambertianMaterial& material, RayHitData& data, Vec3& result, Ray& scattered) -> bool {
+auto Materials::apply(const Material::LambertianMaterial& material, RayHitData& data, Vec3& result, Ray& scattered) -> bool {
 	Vec3 direction = data.normal + Vec3::randomUnit();
 
 	if(direction.nearZero()) {

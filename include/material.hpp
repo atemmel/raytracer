@@ -26,7 +26,7 @@ struct Materials {
 	static auto apply(size_t index, RayHitData& data, Vec3& result, Ray& scattered) -> bool;
 
 private:
-	static auto applyLambertian(const Material::LambertianMaterial& material, RayHitData& data, Vec3& result, Ray& scattered) -> bool;
+	static auto apply(const Material::LambertianMaterial& material, RayHitData& data, Vec3& result, Ray& scattered) -> bool;
 
 	static std::vector<Material> materials;
 };

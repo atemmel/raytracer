@@ -31,6 +31,7 @@ auto Ray::hit(Sphere sphere, float minStep, float maxStep, RayHitData& data) con
 	data.step = root;
 	data.point = at(root);
 	data.normal = (data.point - sphere.origin) / sphere.radius;
+	data.material = sphere.material;
 	return true;
 }
 
@@ -140,6 +141,7 @@ auto Ray::hit(const Box& box, float minStep, float maxStep, RayHitData& data) co
 	}
 	data.normal.unit();
 	data.point = at(data.step);
+	data.material = box.material;
 	return true;
 }
 
