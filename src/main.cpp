@@ -19,7 +19,7 @@ auto rayColor(const Ray& ray, const World& world, size_t depth) -> Vec3 {
 	if(ray.hit(world, 0.0001f, Infinity, data)) {
 		Ray scattered{};
 		Vec3 color{};
-		if(Materials::apply(data.material, data, color, scattered)) {
+		if(Materials::apply(data.material, ray, data, color, scattered)) {
 			return color * rayColor(scattered, world, depth - 1);
 		}
 		return {};
@@ -52,36 +52,90 @@ auto main(int argc, char** argv) -> int {
 		}
 	}
 
-	Camera camera;
-	constexpr size_t imageWidth = 800;
-	const size_t imageHeight = 
-		static_cast<int>(imageWidth / camera.aspectRatio);
+	constexpr Vec3 lookFrom = {
+		//13.f, 2.f, 3.f,
+		0.f, 2.f, 13.f,
+	};
 
-	constexpr size_t samplesPerPixel = 100;
+	constexpr Vec3 lookAt = {
+		0.f, 0.f, -0.f, 
+	};
+
+	constexpr Vec3 up = {
+		0.f, 1.f, 0.f,
+	};
+
+	constexpr float fov = 20.f;
+	constexpr float aspectRatio = 16.f / 9.f;
+	auto aperture = 0.1f;
+	//auto focusDistance = (lookFrom - lookAt).norm();
+	auto focusDistance = 10.f;
+
+	Camera camera(
+		lookFrom,
+		lookAt,
+		up,
+		fov,
+		aspectRatio,
+		aperture,
+		focusDistance
+		
+	);
+	constexpr size_t imageWidth = 1920;
+	const size_t imageHeight = 
+		static_cast<int>(imageWidth / aspectRatio);
+
+	constexpr size_t samplesPerPixel = 500;
 
 	constexpr size_t maxDepth = 20;
 
 	auto blueMaterial = Materials::create({
+		.model = Materials::Material::Lambertian,
 		.lambertian = {
-			.albedo = {0.5f, 0.7f, 1.0f},
+			.albedo = {0.4f, 0.4f, 0.6f},
 		},
 	});
 
 	auto redMaterial = Materials::create({
+		.model = Materials::Material::Lambertian,
 		.lambertian = {
 			.albedo = {1.0f, 0.0f, 0.0f},
 		},
 	});
 
+	auto greenMaterial = Materials::create({
+		.model = Materials::Material::Lambertian,
+		.lambertian = {
+			.albedo = {0.2f, 0.8f, 0.1f},
+		},
+	});
+
+	auto metalMaterial = Materials::create({
+		.model = Materials::Material::Metallic,
+		.metallic = {
+			.albedo = {0.8f, 0.8f, 0.8f},
+			.fuzziness = 0.f,
+		},
+	});
+
+	auto fuzzyMetalMaterial = Materials::create({
+		.model = Materials::Material::Metallic,
+		.metallic = {
+			.albedo = {0.2f, 0.2f, 0.2f},
+			.fuzziness = 0.5f,
+		},
+	});
+
 	World world;
-	world.add(Sphere{{0.f, 0.f, -1.f}, 0.5f, blueMaterial});
-	world.add(Sphere{{2.f, 0.f, -2.f}, 0.2f, redMaterial});
-	world.add(Sphere{{0.2f, 0.f, -0.6f}, 0.2f, blueMaterial});
-	world.add(Sphere{{0.f, -100.5f, -1.f}, 100.f, blueMaterial});
+	world.add(Sphere{{0.f, 0.f,  2.f}, 0.5f, metalMaterial});
+	world.add(Sphere{{2.f, 0.f, -1.f}, 0.2f, redMaterial});
+	world.add(Sphere{{1.f, -0.3f, -1.5f}, 0.2f, fuzzyMetalMaterial});
+	world.add(Sphere{{-0.7f, 0.5f, -1.1f}, 0.2f, blueMaterial});
+	world.add(Sphere{{0.f, -100.5f, -1.f}, 100.f, greenMaterial});
 
 	world.add(Box{
-		.min = {-0.5f, 0.0f, -1.0f}, 
-		.max = {-0.0f, 0.5f, -0.5f},
+		.min = {-1.5f, -0.5f, -1.5f}, 
+		.max = {-1.0f,  0.0f, -1.0f},
 		.material = blueMaterial,
 	});
 

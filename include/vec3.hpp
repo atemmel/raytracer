@@ -29,6 +29,7 @@ struct Vec3 {
 	auto norm() const -> float;
 	auto squaredNorm() const -> float;
 	auto unit() const -> Vec3;
+	auto reflect(const Vec3 u) const -> Vec3;
 
 	auto nearZero() const -> bool;
 };

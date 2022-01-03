@@ -78,6 +78,10 @@ auto Vec3::unit() const -> Vec3 {
 	return *this / norm();
 }
 
+auto Vec3::reflect(const Vec3 u) const -> Vec3 {
+	return *this - 2 * dot(u) * u;
+}
+
 auto Vec3::nearZero() const -> bool {
 	constexpr static float epsilon = 1e-6;
 	return std::abs(x) < epsilon 
