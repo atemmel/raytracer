@@ -81,11 +81,11 @@ auto main(int argc, char** argv) -> int {
 		focusDistance
 		
 	);
-	constexpr size_t imageWidth = 1920;
+	constexpr size_t imageWidth = 720;
 	const size_t imageHeight = 
 		static_cast<int>(imageWidth / aspectRatio);
 
-	constexpr size_t samplesPerPixel = 500;
+	constexpr size_t samplesPerPixel = 100;
 
 	constexpr size_t maxDepth = 20;
 
@@ -131,12 +131,18 @@ auto main(int argc, char** argv) -> int {
 	world.add(Sphere{{2.f, 0.f, -1.f}, 0.2f, redMaterial});
 	world.add(Sphere{{1.f, -0.3f, -1.5f}, 0.2f, fuzzyMetalMaterial});
 	world.add(Sphere{{-0.7f, 0.5f, -1.1f}, 0.2f, blueMaterial});
-	world.add(Sphere{{0.f, -100.5f, -1.f}, 100.f, greenMaterial});
+	//world.add(Sphere{{0.f, -100.5f, -1.f}, 100.f, greenMaterial});
 
 	world.add(Box{
 		.min = {-1.5f, -0.5f, -1.5f}, 
 		.max = {-1.0f,  0.0f, -1.0f},
 		.material = blueMaterial,
+	});
+
+	world.add(Box{
+		.min = {-100.f, -10.f, -100.f},
+		.max = { 100.f, -0.5f,  100.f},
+		.material = greenMaterial,
 	});
 
 	auto image = Image::create(imageWidth, imageHeight);
