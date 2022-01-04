@@ -53,7 +53,6 @@ auto main(int argc, char** argv) -> int {
 	}
 
 	constexpr Vec3 lookFrom = {
-		//13.f, 2.f, 3.f,
 		0.f, 2.f, 13.f,
 	};
 
@@ -68,7 +67,6 @@ auto main(int argc, char** argv) -> int {
 	constexpr float fov = 20.f;
 	constexpr float aspectRatio = 16.f / 9.f;
 	auto aperture = 0.1f;
-	//auto focusDistance = (lookFrom - lookAt).norm();
 	auto focusDistance = 10.f;
 
 	Camera camera(
@@ -131,7 +129,6 @@ auto main(int argc, char** argv) -> int {
 	world.add(Sphere{{2.f, 0.f, -1.f}, 0.2f, redMaterial});
 	world.add(Sphere{{1.f, -0.3f, -1.5f}, 0.2f, fuzzyMetalMaterial});
 	world.add(Sphere{{-0.7f, 0.5f, -1.1f}, 0.2f, blueMaterial});
-	//world.add(Sphere{{0.f, -100.5f, -1.f}, 100.f, greenMaterial});
 
 	world.add(Box{
 		.min = {-1.5f, -0.5f, -1.5f}, 
