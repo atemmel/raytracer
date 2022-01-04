@@ -4,12 +4,22 @@ file(GLOB_RECURSE SOURCES RELATIVE ${CMAKE_SOURCE_DIR} "./src/*.cpp")
 add_executable(raytracer ${SOURCES})
 set_property(TARGET raytracer PROPERTY CXX_STANDARD 20)
 
-find_package(Threads REQUIRED)
-
 set(CMAKE_CXX_FLAGS_DEBUG "-g")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
-#Optional:
+if( ${CMAKE_SYSTEM_NAME} MATCHES "Emscripten")
+	set(USE_FLAGS "-s USE_SDL=2 -s USE_PTHREADS=1 -s PTHREAD_POOL_SIZE=4")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${USE_FLAGS}")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${USE_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${USE_FLAGS}")
+    set(CMAKE_EXECUTABLE_SUFFIX .html)
+else()
+	find_package(Threads)
+    find_package(SDL2 REQUIRED)
+    find_package(Freetype REQUIRED)
+	target_link_libraries(raytracer Threads::Threads)
+endif()
+
 include_directories(include)
-#target_link_libraries(lang LLVM)
-target_link_libraries(raytracer Threads::Threads)
+include_directories(${SDL2_INCLUDE_DIRS})
+target_link_libraries(raytracer ${SDL2_LIBRARIES})

@@ -118,7 +118,7 @@ auto Ray::hit(const Box& box, float minStep, float maxStep, RayHitData& data) co
 		return false;
 	}
 
-	constexpr static std::array<Vec3, 3> allNormals = {
+	const static std::array<Vec3, 3> allNormals = {
 		Vec3{1.f, 0.f, 0.f},
 		Vec3{0.f, 1.f, 0.f},
 		Vec3{0.f, 0.f, 1.f},

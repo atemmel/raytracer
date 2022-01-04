@@ -6,7 +6,7 @@ auto Image::create(size_t w, size_t h) -> Image {
 	Image image;
 	image.width = w;
 	image.height = h;
-	image.data.resize(w * h, {0.f, 0.f, 0.f});
+	image.data.resize(w * h, Vec3{0.f, 0.f, 0.f});
 	return image;
 }
 
