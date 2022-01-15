@@ -1,6 +1,73 @@
-\section{Theory / Related work}
+\section{Theory}
 \label{ch:theory}
 \noindent
+This chapter will present theory related to the project.
+
+\subsection{Graphics Processing Unit (GPU)}
+
+The GPU works as a complementary workhorse to the CPU. Whereas the CPU remains flexible in terms of what it is able to compute, the GPU is straight up a stronger version of a CPU when regarding raw computing power. The majority of GPUs enjoy working with triangles, partially due to it being a mathematically pleasant shape to work with, as well as it being a very flexible shape geometrically - most other shapes can be approximated by using the correct amount of triangles.\cite{gpu}
+
+\subsection{OpenGL}
+
+The Open Graphics Library has been the most widely adopted graphics API within the industry for quite some time now, regardless of given the context of a 3D or 2D environment. The first version was released in 1992, with the latest version being released in 2017.\cite{opengl}
+
+\subsubsection{OpenGL Shading Language (GLSL)}
+
+The GLSL programming language is the language used to interact with and manipulate the graphics pipeline. The main benefit gained from using a specific language for this task is that developers no longer need to write hardware-specific or OS-specific code in order to program the GPU.\cite{glsl}
+
+\subsection{Linear Algebra}
+
+Linear Algebra is the subset of mathematics which, amongst other things, discusses the presentation of different kinds of geometry and its transformations, including how geometry can be mapped from one location to another. Two central concepts to the field of linear algebra include the vector: an $N$ -dimensional scalar, as well as the matrix: an $N\cdot M$ -dimensional scalar.
+
+\subsubsection{Dot product}
+
+The dot product is an operation between two vectors ($a$ and $b$) of equal dimension which produces a scalar. A more formal definition would look something like:
+
+\begin{figure}[H]
+	\begin{center}
+		$a \cdot b = \sum_{i=1}^{n}{a_ib_i = a_1b_1 + a_2b_2 + ... a_nb_n}$
+		\caption{The definition of the dot product.}
+	\end{center}
+\end{figure}
+
+\subsubsection{Cross product}
+
+The cross product is an operation between two vectors ($a$ and $b$) of equal dimension which produces a third vector which is orthogonal to both prior vectors. A more formal definition would look something like:
+
+\begin{figure}[H]
+	\begin{center}
+		$a \times b = \left\vert\left\vert a \right\vert\right\vert \left\vert\left\vert b \right\vert\right\vert sin(\theta) n$
+		\caption{The definition of the cross product.}
+		\label{cross-formula}
+	\end{center}
+\end{figure}
+
+In \textit{figure~\ref{cross-formula}} $\theta$ represents the angle between $a$ and $b$ and $n$ represents the unit vector of the plane which contains $a$ and $b$ in the direction which is given by the right hand rule. A more practical definition can be given if the dimension of the vectors is given, such as:\cite{cross-howto}
+
+\begin{figure}[H]
+	\begin{center}
+		$ u = (u_x, u_y, u_z), v = (v_x, v_y, v_z)$
+		$ u \times v = ((u_y v_z - u_z v_y), (u_x v_z - u_z v_x), (u_x v_y - u_y v_x))$
+		\caption{The second, sometimes more practical definition of the cross product.}
+		\label{cross-formula-2}
+	\end{center}
+\end{figure}
+
+\subsubsection{Matrix Multiplication}
+
+\begin{figure}[H]
+	\begin{center}
+$A_{m,n} = 
+\begin{pmatrix}
+a_{1,1} & a_{1,2} & \cdots & a_{1,n} \\
+a_{2,1} & a_{2,2} & \cdots & a_{2,n} \\
+\vdots  & \vdots  & \ddots & \vdots  \\
+a_{m,1} & a_{m,2} & \cdots & a_{m,n} 
+\end{pmatrix}$
+	\end{center}
+\end{figure}
+
+\iffalse
 In the report's theory study, sometimes called Related work, there may be additional facts required for the reader's understanding of the report. At this point a summary of background material in the area should be provided, i.e. standards, scientific articles, books, magazines, documents on the web, technical reports and user manuals. Explain pedagogically with clear examples and many illustrations.
 
 It should be demonstrated that you have an awareness of the context and the background of your work in addition to that carried out by you within the project. Explain the aim of the technology that you describe, and not only how the technology works. For D-level you should display an awareness of the key research within the area, in order to ensure that your work has a certain news value. However it is vital that you do not deviate too much from your research problem.
@@ -45,3 +112,4 @@ Refrain from using less trustworthy sources, instead stick to using material wri
 Use only sources in the list that you refer to or quote in the continuous text. All sources that are used in the source list should be linked to the report through reference in the continuous text, according to the Vancouver-system, which commonly occurs in reports regarding technical matters.
 
 According to the Vancouver-system the source list is arranged in the same order as the sources appear in the continuous text, the source reference is to be stated in the text with a figure within square brackets, i.e. \cite{dataterm-kth} or \cite{eriksson-2001}, \cite{stomquist}. They should also be stated in this order in the source list. Examples of source reference: According to Eriksson \cite{eriksson-2001}  dynamic SFNs can provide significant performance improvements.
+\fi

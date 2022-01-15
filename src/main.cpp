@@ -1,7 +1,7 @@
 #ifdef __EMSCRIPTEN__
 #include <emscripten.h>
 #endif
-#include <SDL.h>
+#include <SDL2/SDL.h>
 
 #include "box.hpp"
 #include "camera.hpp"

@@ -149,7 +149,6 @@ auto Ray::hit(const World& world, float minStep, float maxStep, RayHitData& data
 	auto tempData = RayHitData{};
 	bool didHit = false;
 	float closestHit = maxStep;
-	float boxClosestHit = maxStep;
 
 	for(auto sphere : world.spheres) {
 		if(hit(sphere, minStep, closestHit, tempData)) {
