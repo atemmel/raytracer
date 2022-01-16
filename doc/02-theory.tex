@@ -11,6 +11,41 @@ The GPU works as a complementary workhorse to the CPU. Whereas the CPU remains f
 
 The Open Graphics Library has been the most widely adopted graphics API within the industry for quite some time now, regardless of given the context of a 3D or 2D environment. The first version was released in 1992, with the latest version being released in 2017.\cite{opengl}
 
+\subsubsection{Vertex Buffer Objects (VBO)}
+
+Vertex Buffer Objects is a method of passing vertex-related data to OpenGL. This is accomplished by first aligning all data of interest into one single block of contiguous memory, calculating the length of this memory block and then passing it to the appropriate OpenGL function. As OpenGL predominantly is a C-style API, it is also necessary to free this memory once the program is over.
+
+\begin{figure}[H]
+	\begin{center}
+	\begin{lstlisting}[language=C++]
+GLUint vbo;
+const float data[] = {
+	1.f, 0.f, 1.f, 0.f, 0.f, -1.f, -1.f, 0.f, 1.f
+};
+
+// create VBO
+glGenBuffers(1, &vbo);
+
+// set the VBO as active
+glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+// send vertex data to OpenGL
+glBufferData(GL_ARRAY_BUFFER, sizeof(data), data, GL_STATIC_DRAW);
+
+...
+
+// cleanup
+glDeleteBuffers(1, vbo);
+	\end{lstlisting}
+		\caption{Example of VBO usage within OpenGL.}
+	\end{center}
+\end{figure}
+
+
+\subsubsection{Vertex Array Objects (VAO)}
+
+Vertex Array Objects are meant to be used together with VBOs, but instead of storing raw vertex data, VAOs store metadata related to how the VBO is constructed. Strides, offsets, as well as the amount of bytes provided per index are all valid examples of the type of attributes that are kept as information within a Vertex Array Object.
+
 \subsubsection{OpenGL Shading Language (GLSL)}
 
 The GLSL programming language is the language used to interact with and manipulate the graphics pipeline. The main benefit gained from using a specific language for this task is that developers no longer need to write hardware-specific or OS-specific code in order to program the GPU.\cite{glsl}
@@ -80,16 +115,22 @@ b_{n,1} & b_{n,2} & \cdots & b_{n,m}
 \end{pmatrix}$
 
 		\vspace{1cm}
+		Matrix multiplication is defined as the operation which:
+		\vspace{1cm}
 
 $C = A \cdot B =
 \begin{pmatrix}
-	a_{1,1}b_{1,1} + \cdots + a_{1,n}b_{n,1} & c_{1,2} & \cdots & c_{1,m} \\
-c_{2,1} & c_{2,2} & \cdots & c_{2,m} \\
+	a_{1,1}b_{1,1} + \cdots + a_{1,n}b_{n,1} & a_{1,1}b_{1,2} + \cdots + a_{1,n}b_{n,2} & \cdots & a_{1,1}b_{1,m} + \cdots + a_{1,n}b_{n,m} \\
+	a_{2,1}b_{1,1} + \cdots + a_{2,n}b_{n,1} & a_{2,1}b_{1,2} + \cdots + a_{2,n}b_{n,2} & \cdots & a_{2,1}b_{1,m} + \cdots + a_{2,n}b_{n,m} \\
 \vdots  & \vdots  & \ddots & \vdots  \\
-c_{n,1} & c_{n,2} & \cdots & c_{n,m} 
+	a_{m,1}b_{1,1} + \cdots + a_{m,n}b_{n,1} & a_{m,1}b_{1,2} + \cdots + a_{m,n}b_{n,2} & \cdots & a_{m,1}b_{1,m} + \cdots + a_{m,n}b_{n,m} \\
 \end{pmatrix}$
+	\caption{The formal definition of matrix multiplication}
+	\label{matmul}
 	\end{center}
 \end{figure}
+
+Matrix multiplication, pictured in \textit{figure~\ref{matmul}} is a way of expressing different transformations upon objects. These transformations are effectively chained by multiplying matrices together, and ultimately presented upon a point in space by taking a vector containing an origin point and transposing it so that it too may be multiplied with the product of the prior matrices.
 
 \iffalse
 In the report's theory study, sometimes called Related work, there may be additional facts required for the reader's understanding of the report. At this point a summary of background material in the area should be provided, i.e. standards, scientific articles, books, magazines, documents on the web, technical reports and user manuals. Explain pedagogically with clear examples and many illustrations.

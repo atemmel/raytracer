@@ -1,6 +1,343 @@
 \section{Design / Implementation}
 \label{ch:impl}
 \noindent	
+
+As the course has a rather strict policy regarding the external distribution of source code which relates to the particular assignments mentioned in the course, this chapter will instead focus on discussing a couple of extra exercises which relate to the course material but were not presented as course-specific exercises.
+
+\subsection{Matrix sandbox}
+
+The first of these exercises is something that resembles a matrix sandbox of sorts, in which the user is meant to be presented an object as well as a set of parameters to manipulate this object. These parameters are as follows:
+
+\begin{itemize}
+	\item Translation
+	\item Scale
+	\item Rotation
+\end{itemize}
+
+The crux here is that although these transformation usually are meant to be performed in a particular order, the user should be able to rearrange them in order to visualise what happens if this order is broken.
+
+The first things constructed for this exercise were a couple of helper functions to assist in the relevant matrix math.
+
+\begin{figure}[H]
+	\begin{center}
+	\begin{lstlisting}[language=c]
+// create new matrix
+function NewMat4(values) {
+	if(values.length != 16) {
+		throw "Length of values to construct matrix from must be 16";
+	}
+
+	return [ 
+			values.splice(0, 4), 
+			values.splice(0, 4), 
+			values.splice(0, 4),
+			values.splice(0, 4),
+		];
+}
+
+// create new vector
+function NewVec4(x, y, z, w) {
+	return [x, y, z, w];
+}
+
+// matrix-matrix multiplication
+function Mat4MultiplyMat4(lhs, rhs) {
+	var result = Zero();
+	for(var i = 0; i < 4; i++) {
+		for(var j = 0; j < 4; j++) {
+			for(var k = 0; k < 4; k++) {
+				result[i][j] += lhs[i][k] * rhs[k][j];
+			}
+		}
+	}
+	return result;
+}
+
+// create new scale transform
+function ScaleMat4(sx, sy, sz) {
+	return NewMat4([
+		sx, 0,  0,  0,
+		0,  sy, 0,  0,
+		0,  0,  sz, 0,
+		0,  0,  0,  1,
+	]);
+}
+
+// create new translation transform
+function TranslateMat4(tx, ty, tz) {
+	return NewMat4([
+		1, 0, 0, tx,
+		0, 1, 0, ty,
+		0, 0, 1, tz,
+		0, 0, 0, 1,
+	]);
+}
+
+\end{lstlisting}
+\end{center}
+	\caption{Some matrix related helper functions}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{center}
+	\begin{lstlisting}[language=c]
+
+// create new x-rotation transform
+function RotateX(angle) {
+	const c = Math.cos(angle);
+	const s = Math.sin(angle);
+
+	return NewMat4([
+		1, 0,  0, 0,
+		0, c, -s, 0,
+		0, s,  c, 0,
+		0, 0,  0, 1,
+	]);
+}
+
+// create new y-rotation transform
+function RotateY(angle) {
+	const c = Math.cos(angle);
+	const s = Math.sin(angle);
+
+	return NewMat4([
+		 c, 0, s, 0,
+		 0, 1, 0, 0,
+		-s, 0, c, 0,
+		 0, 0, 0, 1,
+	]);
+}
+
+// create new z-rotation transform
+function RotateZ(angle) {
+	const c = Math.cos(angle);
+	const s = Math.sin(angle);
+
+	return NewMat4([
+		c, -s, 0, 0,
+		s,  c, 0, 0,
+		0,  0, 1, 0,
+		0,  0, 0, 1,
+	]);
+}
+
+function Rotate(x, y, z) {
+	return Mat4MultiplyMat4(Mat4MultiplyMat4(RotateZ(z), 
+		RotateY(y)), RotateX(x));
+}
+	\end{lstlisting}
+	\caption{Some rotation-related helper functions}
+	\end{center}
+\end{figure}
+
+These operations can be clustered a bit more, such as by authoring some sort of general transform object:
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{lstlisting}[language=C]
+// create general transform object
+function NewTransform(translate, scale, rotate) {
+	return {
+		translate: translate,
+		scale: scale,
+		rotate: rotate,
+		rotateX: 0,
+		rotateY: 0,
+		rotateZ: 0,
+	};
+}
+
+// compute a single matrix from a transform object
+function DoRegularTransform(transform) {
+	var result = Identity();
+	result = Mat4MultiplyMat4(result, transform.translate);
+	result = Mat4MultiplyMat4(result, transform.rotate);
+	result = Mat4MultiplyMat4(result, transform.scale);
+	return result;
+};
+
+// apply a transform matrix to a specific vector
+function Mat4MultiplyVec4(mat, vec) {
+	var result = NewVec4(0, 0, 0, 0)
+	for(var i = 0; i < 4; i++) {
+		for(var j = 0; j < 4; j++) {
+			result[i] += mat[i][j] * vec[j];
+		}
+	}
+	return result;
+}
+		\end{lstlisting}
+	\end{center}
+\end{figure}
+
+Now, all that remains is some way to draw lines from vectors. Luckily, this is not too difficult a task using an HTML canvas.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{lstlisting}[language=C]
+// find canvas in html
+const canvas = document.getElementById("draw");
+const ctx = canvas.getContext("2d");
+
+// draw single line
+function DrawLine(from, to) {
+	ctx.beginPath();
+	ctx.moveTo(from[0], from[1]);
+	ctx.lineTo(to[0], to[1]);
+	ctx.stroke();
+}
+
+// draw sequence of lines
+function DrawPoints(points) {
+	for(var i = 1; i < points.length; i++) {
+		DrawLine(points[i - 1], points[i]);
+	}
+	DrawLine(points[points.length - 1], points[0]);
+}
+		\end{lstlisting}
+	\end{center}
+\end{figure}
+
+By then specifying a set of points, it is easy to define some sort of mesh. This mesh can be drawn using the \lstinline{DrawPoints} function and transformed using the \lstinline{DoRegularTransform} and \lstinline{Mat4MultiplyVec4} functions in that order.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{lstlisting}[language=C]
+// create a set of points which corresponds to a grid
+const grid = function() {
+	const n = 20;
+	var arr = new Array(n * 4);
+	const half = n / 2;
+	for(var i = 0; i < arr.length / 4; i++) {
+		arr[i * 4] = NewVec4(i - half, -1, -half, 1);
+		arr[i * 4 + 1] = NewVec4(i - half, -1, half, 1);
+		arr[i * 4 + 2] = NewVec4(-half, -1, i - half, 1);
+		arr[i * 4 + 3] = NewVec4(half, -1, i - half, 1);
+	}
+
+	arr.push(NewVec4(half, -1, half, 1));
+	arr.push(NewVec4(-half, -1, half, 1));
+	arr.push(NewVec4(half, -1, half, 1));
+	arr.push(NewVec4(half, -1, -half, 1));
+
+	return arr;
+}();
+		\end{lstlisting}
+	\end{center}
+\end{figure}
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{lstlisting}[language=C]
+// helper function to draw the aforementioned grid
+function DrawGrid(points) {
+	ctx.strokeStyle = "#aaaaaa";
+	for(var i = 0; i < points.length; i++) {
+		DrawLine(points[i], points[i + 1]);
+		i++;
+	}
+	ctx.strokeStyle = "#000000";
+}
+
+// final function to transform and then draw the grid
+function TransformAndDrawGrid() {
+	var transformPre = DoRegularTransform(gridTransform);
+	var transformPost = DoRegularTransform(cameraTransform);
+	var transform = Mat4MultiplyMat4(transformPre, transformPost);
+	var transformedGrid = Array.from(grid, point => 
+		Mat4MultiplyVec4(transform, point));
+	DrawGrid(transformedGrid);
+}
+		\end{lstlisting}
+		\caption{Code showing what the final function calls to transform and draw a shape might look like}
+	\end{center}
+\end{figure}
+
+\subsection{Raytracer}
+
+Raytracing is a method of rendering which sacrifices performance in order to draw a more authentic image. The main principle behind raytracing is quite simple: rays (of light) are being shot from a given camera position, with their journey being simulated until either the ray travels too far or if it stops hitting any of the shapes that are meant to be rendered. In fact, this procedure in itself, with all details left out can be summarized in just a few iterations, like in \textit{figure~\ref{raytrace-code}}.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{lstlisting}[language=C++]
+// create an array of Vec3
+auto image = Image::create(1200, 720);
+
+// for each pixel present
+for(size_t x = 0; x < image.width; x++) {
+	for(size_t y = 0; y < image.height; y++) {
+		size_t yn = image.height - 1 - y;
+		Vec3 color{};
+		// for each sample that needs to be made
+		for(size_t sample = 0; sample < samplesPerPixel; 
+			sample++) {
+			// randomize ray direction
+			auto u = float(x + randomFloat()) 
+				/ (image.width - 1);
+			auto v = float(yn + randomFloat()) 
+				/ (image.height - 1);
+			// create a ray
+			auto ray = camera.ray(u, v);
+			// calculate resulting color from ray
+			color = color + rayColor(ray, world, maxDepth);
+
+		}
+		image(x, y) = normalizeColor(color, samplesPerPixel);
+	}
+}
+		\end{lstlisting}
+		\caption{A brief summary of the main algorithm behind most raytracers}
+		\label{raytrace-code}
+	\end{center}
+\end{figure}
+
+The complications come from the \lstinline{rayColor} function, which needs to iterate through all shapes that are being rendered in order to figure out if the ray has struck any of them. If that is the case, the material of this shape needs to be studied in order to both calculate the corresponding color gained from intersecting with the shape, but also in order to understand how the ray should behave from there on. Highly reflective materials will let the ray bounce again, thus needing a repetition of the process. As raytracing gains most of its realism from sampling a lot of rays, it also makes sense to introduce some randomness to these steps in order to better approximate the real world.
+
+As an example for how the intersection might look like, \textit{figure~\ref{intersect-code}} shows some intersection code between a ray and a sphere.
+
+\begin{figure}[H]
+	\begin{center}
+		\begin{lstlisting}[language=C++]
+auto Ray::hit(Sphere sphere, float minStep, float maxStep, 
+		RayHitData& data) const -> bool {
+	// use a slightly more efficient version of the 
+	// pythagorean theorem for calculating the intersection
+	auto oc = origin - sphere.origin;
+	auto a = direction.squaredNorm();
+	auto halfB = oc.dot(direction);
+	auto c = oc.squaredNorm() - sphere.radius * sphere.radius;
+	auto discriminant = halfB * halfB - a * c;
+
+	// check to see if an intersection has occurred
+	if(discriminant < 0.f) {
+		return false;
+	}
+	auto sqrtDiscriminant = std::sqrt(discriminant);
+
+	// same as before, but now with a range check
+	auto root = (-halfB - sqrtDiscriminant) / a;
+	if(root < minStep || maxStep < root) {
+		root = (-halfB + sqrtDiscriminant) / a;
+		if(root < minStep || maxStep < root) {
+			return false;
+		}
+	}
+
+	// collect relevant data for the intersection
+	data.step = root;
+	data.point = at(root);
+	data.normal = (data.point - sphere.origin) 
+		/ sphere.radius;
+	data.material = sphere.material;
+	return true;
+}
+		\end{lstlisting}
+		\caption{Ray-Sphere intersection function}
+		\label{intersect-code}
+	\end{center}
+\end{figure}
+
+\iffalse
 The Design or Implementation chapter often appears in technical reports, but not always in scientific reports. Here, the analysis of the problem is implemented and a technical requirement specification is formulated. At this stage, the most important principles in the suggested alternatives for solution are described and formulated in preparation for evaluation at a later point in the report. The description is sometimes placed before, but generally after the methodology/model chapter, if included at all.
 
 The reader is seldom interested in extremely detailed documentation of computer program code, algorithms, electrical circuit diagrams, user guidance, etc. Such details are placed in the appendices.
@@ -10,3 +347,4 @@ As mentioned in the Introduction chapter you have during earlier studies mainly 
 It is not always practically possible to apply the top-down-method, since the problem may be too complex and initially very difficult to visualise the complete overview. It might prove necessary to alternate between the top-down - and bottom-up-method. The latter means that you start with parts already known to you and from simple problems that have been tackled previously you  make use of that knowledge for aspects that you expect to resolve at a later stage in the project. Gradually increase these parts into the bigger systems and problems and then pursue the direction of project's objective.
 
 The top-down-method has the advantage of giving the report a solid structure, which makes it easier for the reader. The documentation therefore often follows the top-down-method. It is thus possible to divide the structure part into several chapters, and to name them after each problem part and system part, i.e. “Specification of requirements”, “Algorithms”, “User interface”, “Program documentation”, “Prototype” and “Implementation”.
+\fi
